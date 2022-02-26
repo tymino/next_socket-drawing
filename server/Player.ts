@@ -1,5 +1,16 @@
-class Player {
-  constructor(name) {
+export default class Player {
+  id: number;
+  name: string;
+  x: number;
+  y: number;
+  r: number;
+  g: number;
+  b: number;
+  color: string;
+  radius: number;
+  speed: number;
+
+  constructor(name: string) {
     this.id = 1;
     this.name = name;
 
@@ -16,5 +27,3 @@ class Player {
     this.speed = 5;
   }
 }
-
-module.exports = { Player };
