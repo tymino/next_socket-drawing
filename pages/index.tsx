@@ -14,20 +14,15 @@ const Home: NextPage = () => {
   const [ctx, setCtx] = useState<CanvasRenderingContext2D>();
   const refCanvas = useRef() as React.MutableRefObject<HTMLCanvasElement>;
 
-  // const [keys, setKeys] = useState<any>({
-  //   [NameKeys.Down]: false,
-  //   [NameKeys.Up]: false,
-  //   [NameKeys.Left]: false,
-  //   [NameKeys.Right]: false,
-  // });
+  const [keys, setKeys] = useState<{ [key: string]: boolean }>({
+    [NameKeys.Up]: false,
+    [NameKeys.Down]: false,
+    [NameKeys.Left]: false,
+    [NameKeys.Right]: false,
+  });
 
-  const keys: any = {};
-
-  const handleKeyDown = (e: any) => (keys[e.key] = true);
-  const handleKeyUp = (e: any) => (keys[e.key] = false);
-
-  useKey(NameKeyStatus.KeyDown, NameKeys.Down, handleKeyDown);
-  useKey(NameKeyStatus.KeyUp, NameKeys.Down, handleKeyUp);
+  useKey(NameKeyStatus.KeyDown, NameKeys.Down, (e: any) => (keys[e.key] = true));
+  useKey(NameKeyStatus.KeyUp, NameKeys.Down, (e: any) => (keys[e.key] = false));
 
   const draw = () => {};
 
@@ -36,6 +31,8 @@ const Home: NextPage = () => {
     if (keys[NameKeys.Down]) socket.emit('pressed', NameKeys.Down);
     if (keys[NameKeys.Left]) socket.emit('pressed', NameKeys.Left);
     if (keys[NameKeys.Right]) socket.emit('pressed', NameKeys.Right);
+
+    console.log(keys);
 
     requestAnimationFrame(gameLoop);
   };
@@ -52,21 +49,6 @@ const Home: NextPage = () => {
     context.fillStyle = '#000000';
     context.fillRect(0, 0, context.canvas.width, context.canvas.height);
   }, []);
-
-  // useEffect(() => {
-  //   const handleKeyDown = (e: any) => (keys[e.key] = true);
-  //   const handleKeyUp = (e: any) => (keys[e.key] = false);
-
-  //   console.log(keys);
-
-  //   window.addEventListener('keydown', handleKeyDown);
-  //   window.addEventListener('keyup', handleKeyUp);
-
-  //   return () => {
-  //     window.removeEventListener('keydown', handleKeyDown);
-  //     window.removeEventListener('keyup', handleKeyUp);
-  //   };
-  // }, []);
 
   useEffect(() => {
     socket.on('welcome', (currentUser, users) => {
