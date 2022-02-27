@@ -1,5 +1,5 @@
 export default class Player {
-  id: number;
+  id: string;
   name: string;
   x: number;
   y: number;
@@ -10,9 +10,9 @@ export default class Player {
   radius: number;
   speed: number;
 
-  constructor(name: string) {
-    this.id = 1;
-    this.name = name;
+  constructor(id: string) {
+    this.id = id;
+    this.name = 'user';
 
     this.x = Math.random() * 500;
     this.y = Math.random() * 500;
