@@ -1,33 +1,35 @@
 import styles from '../styles/Home.module.sass';
 import Head from 'next/head';
-import { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
 
+import useKey from '../hooks/useKey';
+
 import type { NextPage } from 'next';
-import { NameSocket, NameKeys } from '../types';
+import { NameSocket, NameKeys, NameKeyStatus } from '../types';
 
 const Home: NextPage = () => {
   const [socket] = useState<Socket>(io);
 
   const [ctx, setCtx] = useState<CanvasRenderingContext2D>();
   const refCanvas = useRef() as React.MutableRefObject<HTMLCanvasElement>;
+
+  // const [keys, setKeys] = useState<any>({
+  //   [NameKeys.Down]: false,
+  //   [NameKeys.Up]: false,
+  //   [NameKeys.Left]: false,
+  //   [NameKeys.Right]: false,
+  // });
+
   const keys: any = {};
 
+  const handleKeyDown = (e: any) => (keys[e.key] = true);
+  const handleKeyUp = (e: any) => (keys[e.key] = false);
+
+  useKey(NameKeyStatus.KeyDown, NameKeys.Down, handleKeyDown);
+  useKey(NameKeyStatus.KeyUp, NameKeys.Down, handleKeyUp);
+
   const draw = () => {};
-
-  // if (typeof window !== 'undefined') {
-  //   window.addEventListener('keydown', (e) => (keys[e.key] = true), false);
-  //   window.addEventListener('keyup', (e) => delete keys[e.key], false);
-  // }
-
-  const handleKeyDown = (e: any) => {
-    console.log('handleKeyDown');
-    keys[e.key] = true;
-  };
-  const handleKeyUp = (e: any) => {
-    console.log('handleKeyUp');
-    delete keys[e.key];
-  };
 
   const gameLoop = () => {
     if (keys[NameKeys.Up]) socket.emit('pressed', NameKeys.Up);
@@ -51,15 +53,20 @@ const Home: NextPage = () => {
     context.fillRect(0, 0, context.canvas.width, context.canvas.height);
   }, []);
 
-  useEffect(() => {
-    document.body.addEventListener('keydown', handleKeyDown);
-    document.body.addEventListener('keyup', handleKeyUp);
+  // useEffect(() => {
+  //   const handleKeyDown = (e: any) => (keys[e.key] = true);
+  //   const handleKeyUp = (e: any) => (keys[e.key] = false);
 
-    return () => {
-      document.body.removeEventListener('keydown', handleKeyDown);
-      document.body.removeEventListener('keyup', handleKeyUp);
-    };
-  }, [handleKeyDown, handleKeyUp]);
+  //   console.log(keys);
+
+  //   window.addEventListener('keydown', handleKeyDown);
+  //   window.addEventListener('keyup', handleKeyUp);
+
+  //   return () => {
+  //     window.removeEventListener('keydown', handleKeyDown);
+  //     window.removeEventListener('keyup', handleKeyUp);
+  //   };
+  // }, []);
 
   useEffect(() => {
     socket.on('welcome', (currentUser, users) => {
@@ -228,14 +235,7 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <canvas
-        ref={refCanvas}
-        id="canvas"
-        width="500"
-        height="500"
-        onKeyDown={handleKeyDown}
-        onKeyPress={() => console.log('test')}
-        onKeyUp={handleKeyUp}>
+      <canvas ref={refCanvas} id="canvas" width="500" height="500">
         {' '}
         Your Browser Does Not Support Canvas and HTML5{' '}
       </canvas>

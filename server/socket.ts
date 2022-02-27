@@ -1,4 +1,4 @@
-import { Server } from 'socket.io';
+import { Server, Socket } from 'socket.io';
 
 import Player from './Player';
 
@@ -20,7 +20,7 @@ const connectSocket = (server: any) => {
       socket.broadcast.emit('playerLeft', players);
     });
 
-    socket.on(NameKeyStatus, (key: NameKeys) => {
+    socket.on(NameKeyStatus.KeyPressed, (key: NameKeys) => {
       if (key === NameKeys.Up) {
         currentPlayer.y -= currentPlayer.speed;
         socket.emit('PlayersMoving', players);
