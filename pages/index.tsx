@@ -27,22 +27,8 @@ const Home: NextPage = () => {
   }, []);
 
   if (typeof window !== 'undefined') {
-    window.addEventListener(
-      'keydown',
-      function (e) {
-        keys[e.key] = true;
-      },
-      false,
-    );
-
-    //check if key is not being pressed or has lifted up
-    window.addEventListener(
-      'keyup',
-      function (e) {
-        delete keys[e.key];
-      },
-      false,
-    );
+    window.addEventListener('keydown', (e) => (keys[e.key] = true), false);
+    window.addEventListener('keyup', (e) => delete keys[e.key], false);
   }
 
   let W = 0;
@@ -56,6 +42,8 @@ const Home: NextPage = () => {
   const keys: any = {};
 
   const gameLoop = () => {
+    console.log(keys['ArrowUp']);
+    
     if (keys['ArrowUp']) {
       socket.emit('pressed', 38);
       console.log('You are UP');
@@ -139,7 +127,7 @@ const Home: NextPage = () => {
       gradient.addColorStop(1, 'black');
 
       ctx.fillStyle = gradient;
-      ctx.arc(currentUser.x, currentUser.y, currentUser.radius, Math.PI * 2, false);
+      ctx.arc(currentUser.x, currentUser.y, currentUser.radius, Math.PI * 2, Math.PI * 2);
       ctx.fill();
     });
 
@@ -172,7 +160,7 @@ const Home: NextPage = () => {
         gradient.addColorStop(1, 'black');
 
         ctx.fillStyle = gradient;
-        ctx.arc(currentUsers[i].x, currentUsers[i].y, currentUsers[i].radius, Math.PI * 2, false);
+        ctx.arc(currentUsers[i].x, currentUsers[i].y, currentUsers[i].radius, Math.PI * 2, Math.PI * 2);
         ctx.fill();
       }
       console.log('A new User has joined');
@@ -208,7 +196,7 @@ const Home: NextPage = () => {
         gradient.addColorStop(1, 'black');
 
         ctx.fillStyle = gradient;
-        ctx.arc(currentUsers[i].x, currentUsers[i].y, currentUsers[i].radius, Math.PI * 2, false);
+        ctx.arc(currentUsers[i].x, currentUsers[i].y, currentUsers[i].radius, Math.PI * 2, Math.PI * 2);
         ctx.fill();
       }
       console.log('A Player Has left');
@@ -246,7 +234,7 @@ const Home: NextPage = () => {
           gradient.addColorStop(1, 'black');
 
           ctx.fillStyle = gradient;
-          ctx.arc(players[i].x, players[i].y, players[i].radius, Math.PI * 2, false);
+          ctx.arc(players[i].x, players[i].y, players[i].radius, Math.PI * 2, Math.PI * 2);
           ctx.fill();
         }
       };
