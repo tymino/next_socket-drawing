@@ -17,27 +17,12 @@ const connectSocket = (server: any) => {
 
     socket.on(NameSocket.Disconnect, () => {
       players.splice(players.indexOf(currentPlayer), 1);
-      socket.broadcast.emit('playerLeft', players);
+      socket.broadcast.emit('left', players);
     });
 
     socket.on(NameKeyStatus.KeyPressed, (key: NameKeys) => {
       if (key === NameKeys.Up) {
         currentPlayer.y -= currentPlayer.speed;
-        socket.emit('PlayersMoving', players);
-        socket.broadcast.emit('PlayersMoving', players);
-      }
-      if (key === NameKeys.Down) {
-        currentPlayer.y += currentPlayer.speed;
-        socket.emit('PlayersMoving', players);
-        socket.broadcast.emit('PlayersMoving', players);
-      }
-      if (key === NameKeys.Left) {
-        currentPlayer.x -= currentPlayer.speed;
-        socket.emit('PlayersMoving', players);
-        socket.broadcast.emit('PlayersMoving', players);
-      }
-      if (key === NameKeys.Right) {
-        currentPlayer.x += currentPlayer.speed;
         socket.emit('PlayersMoving', players);
         socket.broadcast.emit('PlayersMoving', players);
       }
