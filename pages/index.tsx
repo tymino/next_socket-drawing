@@ -3,8 +3,6 @@ import Head from 'next/head';
 import React, { useEffect, useRef, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
 
-import useKey from '../hooks/useKey';
-
 import type { NextPage } from 'next';
 import { NameSocket, NameKeys, NameKeyStatus } from '../types';
 
@@ -14,30 +12,80 @@ const Home: NextPage = () => {
   const [ctx, setCtx] = useState<CanvasRenderingContext2D>();
   const refCanvas = useRef() as React.MutableRefObject<HTMLCanvasElement>;
 
-  // const [keys, setKeys] = useState<{ [key: string]: boolean }>({
-  //   [NameKeys.Up]: false,
-  //   [NameKeys.Down]: false,
-  //   [NameKeys.Left]: false,
-  //   [NameKeys.Right]: false,
-  // });
+  const [brush, setBrush] = useState({
+    x: 0,
+    y: 0,
+    color: '#fff',
+    size: 10,
+    down: false,
+  });
+  const [strokes, setStrokes] = useState<any>([]);
+  const [currentStroke, setCurrentStroke] = useState<any>({
+    color: '#fff',
+    size: 10,
+    points: [],
+  });
 
-  // useKey(NameKeyStatus.KeyDown, NameKeys.Down, (e: any) => (keys[e.key] = true));
-  // useKey(NameKeyStatus.KeyUp, NameKeys.Down, (e: any) => (keys[e.key] = false));
+  const draw = () => {
+    if (!ctx) return;
+    // ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    ctx.lineCap = 'round';
 
-  const draw = () => {};
+    for (let i = 0; i < strokes.length; i++) {
+      const s = strokes[i];
+      ctx.strokeStyle = s.color;
+      ctx.lineWidth = s.size;
+      ctx.beginPath();
+      ctx.moveTo(s.points[0].x, s.points[0].y);
+      for (var j = 0; j < s.points.length; j++) {
+        var p = s.points[j];
+        ctx.lineTo(p.x, p.y);
+      }
+      ctx.stroke();
+    }
+  };
 
-  // const gameLoop = () => {
-  //   if (keys[NameKeys.Up]) socket.emit('pressed', NameKeys.Up);
-  //   if (keys[NameKeys.Down]) socket.emit('pressed', NameKeys.Down);
-  //   if (keys[NameKeys.Left]) socket.emit('pressed', NameKeys.Left);
-  //   if (keys[NameKeys.Right]) socket.emit('pressed', NameKeys.Right);
+  const handleMouseEvent = (e: any) => {
+    const x = e.pageX;
+    const y = e.pageY;
 
-  //   console.log(keys);
+    setBrush({
+      ...brush,
+      x,
+      y,
+    });
 
-  //   requestAnimationFrame(gameLoop);
-  // };
+    const newPoints = currentStroke.points.push({ x, y });
 
-  // if (typeof window !== 'undefined') requestAnimationFrame(gameLoop);
+    setCurrentStroke({
+      color: '#fff',
+      size: 10,
+      points: newPoints,
+    });
+
+    draw();
+  };
+
+  const handleMouseDown = (e: any) => {
+    brush.down = true;
+
+    strokes.push(currentStroke);
+
+    handleMouseEvent(e);
+  };
+
+  const handleMouseUp = (e: any) => {
+    brush.down = false;
+    setCurrentStroke({
+      color: '#fff',
+      size: 10,
+      points: [],
+    });
+    handleMouseEvent(e);
+  };
+  const handleMouseMove = (e: any) => {
+    if (brush.down) handleMouseEvent(e);
+  };
 
   useEffect(() => {
     const canvas = refCanvas.current;
@@ -50,18 +98,7 @@ const Home: NextPage = () => {
     context.fillRect(0, 0, context.canvas.width, context.canvas.height);
   }, []);
 
-  useEffect(() => {
-    socket.on('welcome', (currentUser, users) => {
-      if (!ctx) return;
-
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
-      ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-    });
-
-    //other users get updated with new players when teh new player joins
-    socket.on('currentUsers', (currentUsers) => {});
-    //if a player leaves, everyone gets new set of players
-  }, [socket, ctx]);
+  useEffect(() => {}, [socket, ctx]);
 
   return (
     <div className={styles.container}>
@@ -71,7 +108,14 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <canvas ref={refCanvas} id="canvas" width="500" height="500">
+      <canvas
+        ref={refCanvas}
+        id="canvas"
+        width="500"
+        height="500"
+        onMouseDown={handleMouseDown}
+        onMouseUp={handleMouseUp}
+        onMouseMove={handleMouseMove}>
         {' '}
         Your Browser Does Not Support Canvas and HTML5{' '}
       </canvas>
