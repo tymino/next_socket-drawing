@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
 
 import type { NextPage } from 'next';
-import { NameSocket, NameKeys, NameKeyStatus } from '../types';
+import { NameSocket } from '../types';
 
 const Home: NextPage = () => {
   const [socket] = useState<Socket>(io);
@@ -20,15 +20,15 @@ const Home: NextPage = () => {
     down: false,
   });
   const [strokes, setStrokes] = useState<any>([]);
-  const [currentStroke, setCurrentStroke] = useState<any>({
+
+  let currentStroke: any = {
     color: '#fff',
     size: 10,
     points: [],
-  });
+  };
 
   const draw = () => {
     if (!ctx) return;
-    // ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
     ctx.lineCap = 'round';
 
     for (let i = 0; i < strokes.length; i++) {
@@ -45,29 +45,31 @@ const Home: NextPage = () => {
     }
   };
 
+  const sendPoints = async (data: any) => {
+    socket.emit(NameSocket.Draws, { x: data.x, y: data.y });
+  };
+
   const handleMouseEvent = (e: any) => {
-    const x = e.pageX;
-    const y = e.pageY;
+    const localX = e.pageX;
+    const localY = e.pageY;
 
-    setBrush({
-      ...brush,
-      x,
-      y,
-    });
+    const data = { x: localX, y: localY };
 
-    const newPoints = currentStroke.points.push({ x, y });
+    currentStroke.points.push(data);
 
-    setCurrentStroke({
-      color: '#fff',
-      size: 10,
-      points: newPoints,
-    });
+    sendPoints(data);
 
     draw();
   };
 
   const handleMouseDown = (e: any) => {
     brush.down = true;
+
+    currentStroke = {
+      color: '#fff',
+      size: 10,
+      points: [],
+    };
 
     strokes.push(currentStroke);
 
@@ -76,12 +78,8 @@ const Home: NextPage = () => {
 
   const handleMouseUp = (e: any) => {
     brush.down = false;
-    setCurrentStroke({
-      color: '#fff',
-      size: 10,
-      points: [],
-    });
-    handleMouseEvent(e);
+    currentStroke = null;
+    // handleMouseEvent(e);
   };
   const handleMouseMove = (e: any) => {
     if (brush.down) handleMouseEvent(e);
@@ -98,7 +96,25 @@ const Home: NextPage = () => {
     context.fillRect(0, 0, context.canvas.width, context.canvas.height);
   }, []);
 
-  useEffect(() => {}, [socket, ctx]);
+  useEffect(() => {
+    socket.on(NameSocket.Сoloring, (data) => {
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      currentStroke = {
+        color: '#fff',
+        size: 10,
+        points: [],
+      };
+
+      strokes.push(currentStroke);
+
+      currentStroke.points.push({
+        x: data.x,
+        y: data.y,
+      });
+
+      draw();
+    });
+  }, [currentStroke.points, draw, socket]);
 
   return (
     <div className={styles.container}>
