@@ -44,7 +44,6 @@ const Home: NextPage = () => {
     sendStrokes(strokes);
   };
   const handleMouseMove = (e: any) => {
-    
     if (e.button === 0) console.log(e.button);
 
     if (activeBrush.down) handleMouseEvent(e);
@@ -71,13 +70,13 @@ const Home: NextPage = () => {
     if (ctx) {
       ctx.lineCap = 'round';
 
+      ctx.beginPath();
+
       strokes.forEach((stroke: IStrokes) => {
         ctx.strokeStyle = stroke.color;
         ctx.lineWidth = stroke.size;
 
-        ctx.beginPath();
         ctx.moveTo(stroke.points[0].x, stroke.points[0].y);
-
         stroke.points.forEach((point: IPositionBrush) => ctx.lineTo(point.x, point.y));
 
         ctx.stroke();
