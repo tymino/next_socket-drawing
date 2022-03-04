@@ -19,6 +19,13 @@ const Home: NextPage = () => {
   });
   const [strokes, setStrokes] = useState<IStrokes[]>([]);
 
+  /*
+    Переписать логику строк
+    Сервер должен получать текущую линию и рассылать ее всем, а клиент должен ее "стакать" с имеющимися.
+    Сервер не обязан знать о всех линиях клиента
+    Сервер просто должен пересылать линию от клиента всем подключенным пользователям
+  */
+
   const sendStrokes = async (data: IStrokes[]) => socket.emit(NameSocket.Draws, data);
 
   const handleMouseEvent = (e: any) => {
