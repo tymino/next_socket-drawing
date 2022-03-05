@@ -17,7 +17,33 @@ const Home: NextPage = () => {
     size: 10,
     down: false,
   });
+  const [currentStroke, setCurrentStroke] = useState<IStrokes>({
+    color: '#fff',
+    size: 10,
+    points: [],
+  });
+
   const [strokes, setStrokes] = useState<IStrokes[]>([]);
+
+  const draw = (strokeData: IStrokes[]) => {
+    console.log('draw');
+    if (ctx) {
+      ctx.lineCap = 'round';
+
+      ctx.beginPath();
+
+      strokeData.forEach((stroke: IStrokes) => {
+        ctx.strokeStyle = stroke.color;
+        ctx.lineWidth = stroke.size;
+
+        ctx.moveTo(stroke.points[0].x, stroke.points[0].y);
+        stroke.points.forEach((point: IPositionBrush) => ctx.lineTo(point.x, point.y));
+
+        ctx.stroke();
+        ctx.closePath();
+      });
+    }
+  };
 
   /*
     Переписать логику строк
@@ -26,17 +52,14 @@ const Home: NextPage = () => {
     Сервер просто должен пересылать линию от клиента всем подключенным пользователям
   */
 
-  const sendStrokes = async (data: IStrokes[]) => socket.emit(NameSocket.Draws, data);
+  const sendStrokes = async (data: IStrokes) => socket.emit(NameSocket.Draws, data);
 
   const handleMouseEvent = (e: any) => {
     const position: IPositionBrush = { x: e.pageX, y: e.pageY };
 
-    const currentStroke: IStrokes = {
-      color: '#fff',
-      size: 10,
-      points: [],
-    };
     currentStroke.points.push(position);
+
+    draw([currentStroke]);
 
     setStrokes([...strokes, currentStroke]);
   };
@@ -48,11 +71,10 @@ const Home: NextPage = () => {
 
   const handleMouseUp = (e: any) => {
     activeBrush.down = false;
-    sendStrokes(strokes);
+    sendStrokes(currentStroke);
+    setCurrentStroke({ color: '#fff', size: 10, points: [] });
   };
   const handleMouseMove = (e: any) => {
-    if (e.button === 0) console.log(e.button);
-
     if (activeBrush.down) handleMouseEvent(e);
   };
 
@@ -68,29 +90,17 @@ const Home: NextPage = () => {
   }, []);
 
   useEffect(() => {
-    socket.on(NameSocket.Сoloring, (data: IStrokes[]) => {
-      setStrokes(data);
+    socket.on(NameSocket.Сoloring, (data: IStrokes) => {
+      console.log('socket', data);
+
+      setStrokes([...strokes, data]);
+      draw([data]);
     });
   }, [socket]);
 
   useEffect(() => {
-    if (ctx) {
-      ctx.lineCap = 'round';
-
-      ctx.beginPath();
-
-      strokes.forEach((stroke: IStrokes) => {
-        ctx.strokeStyle = stroke.color;
-        ctx.lineWidth = stroke.size;
-
-        ctx.moveTo(stroke.points[0].x, stroke.points[0].y);
-        stroke.points.forEach((point: IPositionBrush) => ctx.lineTo(point.x, point.y));
-
-        ctx.stroke();
-        ctx.closePath();
-      });
-    }
-  }, [strokes, ctx]);
+    
+  }, [strokes]);
 
   return (
     <div className={styles.container}>
