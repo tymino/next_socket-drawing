@@ -1,10 +1,10 @@
 import styles from '../styles/Home.module.sass';
 import Head from 'next/head';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
 
 import type { NextPage } from 'next';
-import { IPositionBrush, IBrush, IStrokes, NameSocket } from '../types';
+import { IPositionBrush, IStrokes, NameSocket } from '../types';
 
 const Home: NextPage = () => {
   const [socket] = useState<Socket>(io);
@@ -12,70 +12,54 @@ const Home: NextPage = () => {
   const [ctx, setCtx] = useState<CanvasRenderingContext2D>();
   const refCanvas = useRef() as React.MutableRefObject<HTMLCanvasElement>;
 
-  const [activeBrush, setActiveBrush] = useState<IBrush>({
-    color: '#fff',
-    size: 10,
-    down: false,
-  });
-  const [currentStroke, setCurrentStroke] = useState<IStrokes>({
+  const [isBrushDown, setIsBrushDown] = useState<boolean>(false);
+  const [clientStroke, setClientStroke] = useState<IStrokes>({
     color: '#fff',
     size: 10,
     points: [],
   });
 
-  const [strokes, setStrokes] = useState<IStrokes[]>([]);
-
-  const draw = (strokeData: IStrokes[]) => {
-    console.log('draw');
-    if (ctx) {
-      ctx.lineCap = 'round';
+  const draw = useCallback(
+    (stroke: IStrokes) => {
+      if (!ctx) return;
 
       ctx.beginPath();
+      ctx.lineCap = 'round';
+      ctx.strokeStyle = stroke.color;
+      ctx.lineWidth = stroke.size;
 
-      strokeData.forEach((stroke: IStrokes) => {
-        ctx.strokeStyle = stroke.color;
-        ctx.lineWidth = stroke.size;
+      ctx.moveTo(stroke.points[0].x, stroke.points[0].y);
+      stroke.points.forEach((point: IPositionBrush) => ctx.lineTo(point.x, point.y));
 
-        ctx.moveTo(stroke.points[0].x, stroke.points[0].y);
-        stroke.points.forEach((point: IPositionBrush) => ctx.lineTo(point.x, point.y));
-
-        ctx.stroke();
-        ctx.closePath();
-      });
-    }
-  };
-
-  /*
-    Переписать логику строк
-    Сервер должен получать текущую линию и рассылать ее всем, а клиент должен ее "стакать" с имеющимися.
-    Сервер не обязан знать о всех линиях клиента
-    Сервер просто должен пересылать линию от клиента всем подключенным пользователям
-  */
+      ctx.stroke();
+      ctx.closePath();
+    },
+    [ctx],
+  );
 
   const sendStrokes = async (data: IStrokes) => socket.emit(NameSocket.Draws, data);
 
   const handleMouseEvent = (e: any) => {
     const position: IPositionBrush = { x: e.pageX, y: e.pageY };
 
-    currentStroke.points.push(position);
+    clientStroke.points.push(position);
 
-    draw([currentStroke]);
-
-    setStrokes([...strokes, currentStroke]);
+    draw(clientStroke);
   };
 
   const handleMouseDown = (e: any) => {
-    activeBrush.down = true;
+    setIsBrushDown(true);
     handleMouseEvent(e);
   };
 
   const handleMouseUp = (e: any) => {
-    activeBrush.down = false;
-    sendStrokes(currentStroke);
-    setCurrentStroke({ color: '#fff', size: 10, points: [] });
+    setIsBrushDown(false);
+    sendStrokes(clientStroke);
+    setClientStroke({ color: '#fff', size: 10, points: [] });
   };
+
   const handleMouseMove = (e: any) => {
-    if (activeBrush.down) handleMouseEvent(e);
+    if (isBrushDown) handleMouseEvent(e);
   };
 
   useEffect(() => {
@@ -91,16 +75,9 @@ const Home: NextPage = () => {
 
   useEffect(() => {
     socket.on(NameSocket.Сoloring, (data: IStrokes) => {
-      console.log('socket', data);
-
-      setStrokes([...strokes, data]);
-      draw([data]);
+      draw(data);
     });
-  }, [socket]);
-
-  useEffect(() => {
-    
-  }, [strokes]);
+  }, [socket, draw]);
 
   return (
     <div className={styles.container}>

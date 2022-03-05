@@ -3,16 +3,10 @@ interface IPositionBrush {
   y: number;
 }
 
-interface IBrush {
-  color: string;
-  size: number;
-  down: boolean;
-}
-
 interface IStrokes {
   color: string;
   size: number;
   points: IPositionBrush[];
 }
 
-export type { IPositionBrush, IBrush, IStrokes };
+export type { IPositionBrush, IStrokes };
