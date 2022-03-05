@@ -15,18 +15,24 @@ const Home: NextPage = () => {
   const [isBrushDown, setIsBrushDown] = useState<boolean>(false);
   const [clientStroke, setClientStroke] = useState<IStrokes>({
     color: '#fff',
-    size: 10,
+    size: 2,
     points: [],
   });
+
+  // Перевести в компонент canvas
+  // Добавить кнопку "очиски листа"
+  // Инпут с цветами
+  // Инпут с размером кисти
+  // ? Кисть - ластик
 
   const draw = useCallback(
     (stroke: IStrokes) => {
       if (!ctx) return;
 
-      ctx.beginPath();
-      ctx.lineCap = 'round';
-      ctx.strokeStyle = stroke.color;
       ctx.lineWidth = stroke.size;
+      ctx.strokeStyle = stroke.color;
+
+      ctx.beginPath();
 
       ctx.moveTo(stroke.points[0].x, stroke.points[0].y);
       stroke.points.forEach((point: IPositionBrush) => ctx.lineTo(point.x, point.y));
@@ -39,7 +45,7 @@ const Home: NextPage = () => {
 
   const sendStrokes = async (data: IStrokes) => socket.emit(NameSocket.Draws, data);
 
-  const handleMouseEvent = (e: any) => {
+  const handleMouseEvent = (e: React.MouseEvent<HTMLCanvasElement>) => {
     const position: IPositionBrush = { x: e.pageX, y: e.pageY };
 
     clientStroke.points.push(position);
@@ -47,18 +53,18 @@ const Home: NextPage = () => {
     draw(clientStroke);
   };
 
-  const handleMouseDown = (e: any) => {
+  const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
     setIsBrushDown(true);
     handleMouseEvent(e);
   };
 
-  const handleMouseUp = (e: any) => {
+  const handleMouseUp = () => {
     setIsBrushDown(false);
     sendStrokes(clientStroke);
-    setClientStroke({ color: '#fff', size: 10, points: [] });
+    setClientStroke({ ...clientStroke, points: [] });
   };
 
-  const handleMouseMove = (e: any) => {
+  const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
     if (isBrushDown) handleMouseEvent(e);
   };
 
@@ -74,8 +80,8 @@ const Home: NextPage = () => {
   }, []);
 
   useEffect(() => {
-    socket.on(NameSocket.Сoloring, (data: IStrokes) => {
-      draw(data);
+    socket.on(NameSocket.Сoloring, (serverData: IStrokes) => {
+      draw(serverData);
     });
   }, [socket, draw]);
 
