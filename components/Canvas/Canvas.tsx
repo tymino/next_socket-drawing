@@ -1,7 +1,7 @@
 import st from './Canvas.module.sass';
 import React, { FC } from 'react';
 
-interface ICanvas {
+interface ICanvasProps {
   reference: React.MutableRefObject<HTMLCanvasElement>;
   width: string;
   height: string;
@@ -10,7 +10,7 @@ interface ICanvas {
   handleMouseMove: (e: React.MouseEvent<HTMLCanvasElement>) => void;
 }
 
-const Canvas: FC<ICanvas> = ({ reference, width, height, handleMouseDown, handleMouseUp, handleMouseMove }) => {
+const Canvas: FC<ICanvasProps> = ({ reference, width, height, handleMouseDown, handleMouseUp, handleMouseMove }) => {
   return (
     <canvas
       ref={reference}

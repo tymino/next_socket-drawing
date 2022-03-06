@@ -3,7 +3,7 @@ import Head from 'next/head';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
 
-import { Canvas } from '../components';
+import { Canvas, Range } from '../components';
 
 import type { NextPage } from 'next';
 import { IPositionBrush, IStrokes, NameSocket } from '../types';
@@ -31,6 +31,7 @@ const Home: NextPage = () => {
     (stroke: IStrokes) => {
       if (!ctx) return;
 
+      ctx.lineCap = 'round';
       ctx.lineWidth = stroke.size;
       ctx.strokeStyle = stroke.color;
 
@@ -47,8 +48,31 @@ const Home: NextPage = () => {
 
   const sendStrokes = async (data: IStrokes) => socket.emit(NameSocket.Draws, data);
 
+  const handleChangeColor = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setClientStroke({
+      ...clientStroke,
+      color: e.target.value,
+    });
+  };
+
+  const handleChangeSize = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setClientStroke({
+      ...clientStroke,
+      size: Number(e.target.value),
+    });
+  };
+
+  const handleResetCanvas = () => {
+    if (ctx) {
+      ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    }
+  };
+
   const handleMouseEvent = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    const position: IPositionBrush = { x: e.pageX, y: e.pageY };
+    const posX = e.pageX - refCanvas.current.getBoundingClientRect().x;
+    const posY = e.pageY - refCanvas.current.getBoundingClientRect().y;
+
+    const position: IPositionBrush = { x: posX, y: posY };
 
     clientStroke.points.push(position);
 
@@ -63,7 +87,10 @@ const Home: NextPage = () => {
   const handleMouseUp = () => {
     setIsBrushDown(false);
     sendStrokes(clientStroke);
-    setClientStroke({ ...clientStroke, points: [] });
+    setClientStroke({
+      ...clientStroke,
+      points: [],
+    });
   };
 
   const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
@@ -76,7 +103,7 @@ const Home: NextPage = () => {
 
     if (context) {
       setCtx(context);
-      context.fillStyle = '#000000';
+      context.fillStyle = '#a3a3a3';
       context.fillRect(0, 0, context.canvas.width, context.canvas.height);
     }
   }, []);
@@ -99,18 +126,18 @@ const Home: NextPage = () => {
         <div className={st.options}>
           <label htmlFor="color">
             color
-            <input
-              type="color"
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => console.log(e.target.value)}
-            />
+            <input type="color" onChange={handleChangeColor} />
           </label>
 
-          <label htmlFor="size">
-            size
-            <input type="range" name="size" />
-          </label>
+          <Range
+            name="Size"
+            minValue={1}
+            maxValue={10}
+            size={clientStroke.size}
+            handleChangeSize={handleChangeSize}
+          />
 
-          <button>Reset</button>
+          <button onClick={handleResetCanvas}>Reset</button>
         </div>
 
         <Canvas
