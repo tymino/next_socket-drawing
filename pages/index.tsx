@@ -1,7 +1,9 @@
-import styles from '../styles/Home.module.sass';
+import st from '../styles/Home.module.sass';
 import Head from 'next/head';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
+
+import { Canvas } from '../components';
 
 import type { NextPage } from 'next';
 import { IPositionBrush, IStrokes, NameSocket } from '../types';
@@ -86,24 +88,40 @@ const Home: NextPage = () => {
   }, [socket, draw]);
 
   return (
-    <div className={styles.container}>
+    <div className={st.container}>
       <Head>
         <title>Drawing | Socket.io</title>
         <meta name="description" content="Drawing Socket.io Next.js" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <canvas
-        ref={refCanvas}
-        id="canvas"
-        width="500"
-        height="500"
-        onMouseDown={handleMouseDown}
-        onMouseUp={handleMouseUp}
-        onMouseMove={handleMouseMove}>
-        {' '}
-        Your Browser Does Not Support Canvas and HTML5{' '}
-      </canvas>
+      <div className={st.container}>
+        <div className={st.options}>
+          <label htmlFor="color">
+            color
+            <input
+              type="color"
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => console.log(e.target.value)}
+            />
+          </label>
+
+          <label htmlFor="size">
+            size
+            <input type="range" name="size" />
+          </label>
+
+          <button>Reset</button>
+        </div>
+
+        <Canvas
+          reference={refCanvas}
+          width="500"
+          height="500"
+          handleMouseDown={handleMouseDown}
+          handleMouseUp={handleMouseUp}
+          handleMouseMove={handleMouseMove}
+        />
+      </div>
     </div>
   );
 };
