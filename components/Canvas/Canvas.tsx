@@ -1,5 +1,5 @@
 import st from './Canvas.module.sass';
-import React, { FC } from 'react';
+import React, { FC, memo } from 'react';
 
 import { ICanvasProps, IMouseTouchEvent } from '../../types';
 

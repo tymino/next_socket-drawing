@@ -1,5 +1,5 @@
 import st from './Range.module.sass';
-import React, { FC } from 'react';
+import React, { FC, memo } from 'react';
 
 import { IRangeProps } from '../../types';
 
@@ -26,4 +26,4 @@ const Range: FC<IRangeProps> = ({ name, minValue, maxValue, size, handleChangeSi
   );
 };
 
-export default Range;
+export default memo(Range);

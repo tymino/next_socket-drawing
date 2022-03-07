@@ -48,19 +48,25 @@ const Home: NextPage = () => {
 
   const sendStrokes = async (data: IStrokes) => socket.emit(NameSocket.Draws, data);
 
-  const handleChangeColor = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setClientStroke({
-      ...clientStroke,
-      color: e.target.value,
-    });
-  };
+  const handleChangeColor = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setClientStroke({
+        ...clientStroke,
+        color: e.target.value,
+      });
+    },
+    [clientStroke],
+  );
 
-  const handleChangeSize = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setClientStroke({
-      ...clientStroke,
-      size: Number(e.target.value),
-    });
-  };
+  const handleChangeSize = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setClientStroke({
+        ...clientStroke,
+        size: Number(e.target.value),
+      });
+    },
+    [clientStroke],
+  );
 
   const handleResetCanvas = () => {
     if (ctx) {

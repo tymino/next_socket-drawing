@@ -1,5 +1,5 @@
 import st from './Color.module.sass';
-import React, { FC } from 'react';
+import React, { FC, memo } from 'react';
 
 import { IColorProps } from '../../types';
 
@@ -12,4 +12,4 @@ const Color: FC<IColorProps> = ({ name, handleChangeColor }) => {
   );
 };
 
-export default Color;
+export default memo(Color);
