@@ -6,7 +6,7 @@ import { io, Socket } from 'socket.io-client';
 import { Canvas, Color, Range } from '../components';
 
 import type { NextPage } from 'next';
-import { IPositionBrush, IStrokes, NameSocket } from '../types';
+import { IPositionBrush, IStrokes, NameSocket, IMouseTouchEvent } from '../types';
 
 const Home: NextPage = () => {
   const [socket] = useState<Socket>(io);
@@ -68,7 +68,7 @@ const Home: NextPage = () => {
     }
   };
 
-  const handleMouseEvent = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
+  const handleMouseEvent = (e: IMouseTouchEvent) => {
     e.persist();
 
     let posX = 0;
@@ -80,7 +80,6 @@ const Home: NextPage = () => {
     }
 
     if (e.nativeEvent instanceof MouseEvent) {
-      console.log(e);
       posX = e.nativeEvent.pageX - refCanvas.current.getBoundingClientRect().x;
       posY = e.nativeEvent.pageY - refCanvas.current.getBoundingClientRect().y;
     }
@@ -92,7 +91,7 @@ const Home: NextPage = () => {
     draw(clientStroke);
   };
 
-  const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
+  const handleMouseDown = (e: IMouseTouchEvent) => {
     setIsBrushDown(true);
     handleMouseEvent(e);
   };
@@ -106,7 +105,7 @@ const Home: NextPage = () => {
     });
   };
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
+  const handleMouseMove = (e: IMouseTouchEvent) => {
     if (isBrushDown) handleMouseEvent(e);
   };
 

@@ -1,0 +1,1 @@
+export type IMouseTouchEvent = React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>;

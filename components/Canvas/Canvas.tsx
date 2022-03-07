@@ -1,14 +1,7 @@
 import st from './Canvas.module.sass';
 import React, { FC } from 'react';
 
-interface ICanvasProps {
-  reference: React.MutableRefObject<HTMLCanvasElement>;
-  width: string;
-  height: string;
-  handleMouseDown: (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => void;
-  handleMouseMove: (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => void;
-  handleMouseUp: () => void;
-}
+import { ICanvasProps, IMouseTouchEvent } from '../../types';
 
 const Canvas: FC<ICanvasProps> = ({
   reference,
@@ -18,14 +11,14 @@ const Canvas: FC<ICanvasProps> = ({
   handleMouseUp,
   handleMouseMove,
 }) => {
-  const handleTouchStart = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
+  const handleTouchStart = (e: IMouseTouchEvent) => {
     handleMouseDown(e);
   };
 
-  const handleTouchMove = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
+  const handleTouchMove = (e: IMouseTouchEvent) => {
     handleMouseMove(e);
   };
-  
+
   const handleTouchEnd = () => {
     handleMouseUp();
   };

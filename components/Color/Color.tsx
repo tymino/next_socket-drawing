@@ -1,10 +1,8 @@
 import st from './Color.module.sass';
 import React, { FC } from 'react';
 
-interface IColorProps {
-  name: string;
-  handleChangeColor: (e: React.ChangeEvent<HTMLInputElement>) => void;
-}
+import { IColorProps } from '../../types';
+
 const Color: FC<IColorProps> = ({ name, handleChangeColor }) => {
   return (
     <div className={st.container}>

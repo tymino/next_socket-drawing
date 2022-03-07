@@ -1,13 +1,7 @@
 import st from './Range.module.sass';
 import React, { FC } from 'react';
 
-interface IRangeProps {
-  name: string;
-  minValue: number;
-  maxValue: number;
-  size: number;
-  handleChangeSize: (e: React.ChangeEvent<HTMLInputElement>) => void;
-}
+import { IRangeProps } from '../../types';
 
 const Range: FC<IRangeProps> = ({ name, minValue, maxValue, size, handleChangeSize }) => {
   return (
