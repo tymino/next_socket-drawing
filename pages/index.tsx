@@ -75,15 +75,14 @@ const Home: NextPage = () => {
     let posY = 0;
 
     if (e.nativeEvent instanceof TouchEvent) {
-      console.log(e);
-      // posX = e - refCanvas.current.getBoundingClientRect().x;
-      // posY = e.touches[0] - refCanvas.current.getBoundingClientRect().y;
+      posX = e.nativeEvent.touches[0].pageX - refCanvas.current.getBoundingClientRect().x;
+      posY = e.nativeEvent.touches[0].pageY - refCanvas.current.getBoundingClientRect().y;
     }
 
     if (e.nativeEvent instanceof MouseEvent) {
       console.log(e);
-      // posX = e.pageX - refCanvas.current.getBoundingClientRect().x;
-      // posY = e.pageY - refCanvas.current.getBoundingClientRect().y;
+      posX = e.nativeEvent.pageX - refCanvas.current.getBoundingClientRect().x;
+      posY = e.nativeEvent.pageY - refCanvas.current.getBoundingClientRect().y;
     }
 
     const position: IPositionBrush = { x: posX, y: posY };
