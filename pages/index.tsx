@@ -3,7 +3,7 @@ import Head from 'next/head';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
 
-import { Canvas, Range } from '../components';
+import { Canvas, Color, Range } from '../components';
 
 import type { NextPage } from 'next';
 import { IPositionBrush, IStrokes, NameSocket } from '../types';
@@ -68,9 +68,23 @@ const Home: NextPage = () => {
     }
   };
 
-  const handleMouseEvent = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    const posX = e.pageX - refCanvas.current.getBoundingClientRect().x;
-    const posY = e.pageY - refCanvas.current.getBoundingClientRect().y;
+  const handleMouseEvent = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
+    e.persist();
+
+    let posX = 0;
+    let posY = 0;
+
+    if (e.nativeEvent instanceof TouchEvent) {
+      console.log(e);
+      // posX = e - refCanvas.current.getBoundingClientRect().x;
+      // posY = e.touches[0] - refCanvas.current.getBoundingClientRect().y;
+    }
+
+    if (e.nativeEvent instanceof MouseEvent) {
+      console.log(e);
+      // posX = e.pageX - refCanvas.current.getBoundingClientRect().x;
+      // posY = e.pageY - refCanvas.current.getBoundingClientRect().y;
+    }
 
     const position: IPositionBrush = { x: posX, y: posY };
 
@@ -79,7 +93,7 @@ const Home: NextPage = () => {
     draw(clientStroke);
   };
 
-  const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
+  const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
     setIsBrushDown(true);
     handleMouseEvent(e);
   };
@@ -93,7 +107,7 @@ const Home: NextPage = () => {
     });
   };
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
+  const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
     if (isBrushDown) handleMouseEvent(e);
   };
 
@@ -124,10 +138,7 @@ const Home: NextPage = () => {
 
       <div className={st.container}>
         <div className={st.options}>
-          <label htmlFor="color">
-            color
-            <input type="color" onChange={handleChangeColor} />
-          </label>
+          <Color name="Color" handleChangeColor={handleChangeColor} />
 
           <Range
             name="Size"

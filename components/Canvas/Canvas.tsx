@@ -5,12 +5,31 @@ interface ICanvasProps {
   reference: React.MutableRefObject<HTMLCanvasElement>;
   width: string;
   height: string;
-  handleMouseDown: (e: React.MouseEvent<HTMLCanvasElement>) => void;
+  handleMouseDown: (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => void;
+  handleMouseMove: (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => void;
   handleMouseUp: () => void;
-  handleMouseMove: (e: React.MouseEvent<HTMLCanvasElement>) => void;
 }
 
-const Canvas: FC<ICanvasProps> = ({ reference, width, height, handleMouseDown, handleMouseUp, handleMouseMove }) => {
+const Canvas: FC<ICanvasProps> = ({
+  reference,
+  width,
+  height,
+  handleMouseDown,
+  handleMouseUp,
+  handleMouseMove,
+}) => {
+  const handleTouchStart = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
+    handleMouseDown(e);
+  };
+
+  const handleTouchMove = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
+    handleMouseMove(e);
+  };
+  
+  const handleTouchEnd = () => {
+    handleMouseUp();
+  };
+
   return (
     <canvas
       ref={reference}
@@ -18,8 +37,11 @@ const Canvas: FC<ICanvasProps> = ({ reference, width, height, handleMouseDown, h
       width={width}
       height={height}
       onMouseDown={handleMouseDown}
+      onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
-      onMouseMove={handleMouseMove}>
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}>
       {' '}
       Your Browser Does Not Support Canvas and HTML5{' '}
     </canvas>
