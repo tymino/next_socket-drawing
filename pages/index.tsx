@@ -29,19 +29,23 @@ const Home: NextPage = () => {
 
   const draw = useCallback(
     (stroke: IStrokes) => {
-      if (!ctx) return;
+      try {
+        if (!ctx) return;
 
-      ctx.lineCap = 'round';
-      ctx.lineWidth = stroke.size;
-      ctx.strokeStyle = stroke.color;
+        ctx.lineCap = 'round';
+        ctx.lineWidth = stroke.size;
+        ctx.strokeStyle = stroke.color;
 
-      ctx.beginPath();
+        ctx.beginPath();
 
-      ctx.moveTo(stroke.points[0].x, stroke.points[0].y);
-      stroke.points.forEach((point: IPositionBrush) => ctx.lineTo(point.x, point.y));
+        ctx.moveTo(stroke.points[0].x, stroke.points[0].y);
+        stroke.points.forEach((point: IPositionBrush) => ctx.lineTo(point.x, point.y));
 
-      ctx.stroke();
-      ctx.closePath();
+        ctx.stroke();
+        ctx.closePath();
+      } catch (error) {
+        console.log('Error, x undefined');
+      }
     },
     [ctx],
   );
