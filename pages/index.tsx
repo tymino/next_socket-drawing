@@ -3,10 +3,10 @@ import Head from 'next/head';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
 
-import { Canvas, Color, Range } from '../components';
+import { Canvas, Color, Palette, Range } from '../components';
 
 import type { NextPage } from 'next';
-import { IPositionBrush, IStrokes, NameSocket, IMouseTouchEvent } from '../types';
+import { IPositionBrush, IStrokes, NameColors, NameSocket, IMouseTouchEvent } from '../types';
 
 const Home: NextPage = () => {
   const [socket] = useState<Socket>(io);
@@ -14,18 +14,13 @@ const Home: NextPage = () => {
   const [ctx, setCtx] = useState<CanvasRenderingContext2D>();
   const refCanvas = useRef() as React.MutableRefObject<HTMLCanvasElement>;
 
+  const [isEraser, setIsEraser] = useState<boolean>(true);
   const [isBrushDown, setIsBrushDown] = useState<boolean>(false);
   const [clientStroke, setClientStroke] = useState<IStrokes>({
-    color: '#fff',
+    color: NameColors.DefaultBrush,
     size: 2,
     points: [],
   });
-
-  // Перевести в компонент canvas
-  // Добавить кнопку "очиски листа"
-  // Инпут с цветами
-  // Инпут с размером кисти
-  // ? Кисть - ластик
 
   const draw = useCallback(
     (stroke: IStrokes) => {
@@ -34,7 +29,7 @@ const Home: NextPage = () => {
 
         ctx.lineCap = 'round';
         ctx.lineWidth = stroke.size;
-        ctx.strokeStyle = stroke.color;
+        ctx.strokeStyle = isEraser ? NameColors.Background : stroke.color;
 
         ctx.beginPath();
 
@@ -47,7 +42,7 @@ const Home: NextPage = () => {
         console.log('Error, x undefined');
       }
     },
-    [ctx],
+    [ctx, isEraser],
   );
 
   const sendStrokes = async (data: IStrokes) => socket.emit(NameSocket.Draws, data);
@@ -125,7 +120,7 @@ const Home: NextPage = () => {
 
     if (context) {
       setCtx(context);
-      context.fillStyle = '#a3a3a3';
+      context.fillStyle = NameColors.Background;
       context.fillRect(0, 0, context.canvas.width, context.canvas.height);
     }
   }, []);
@@ -146,6 +141,8 @@ const Home: NextPage = () => {
 
       <div className={st.container}>
         <div className={st.options}>
+          <Palette eraserState={[isEraser, setIsEraser]} />
+
           <Color name="Color" handleChangeColor={handleChangeColor} />
 
           <Range

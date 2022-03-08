@@ -1,5 +1,6 @@
 export type { IPositionBrush, IStrokes } from './ICanvasState';
 export type { IMouseTouchEvent } from './IMouseTouchEvent';
+export { default as NameColors } from './NameColors';
 export { default as NameSocket } from './NameSocket';
 
 // components
