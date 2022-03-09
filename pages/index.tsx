@@ -14,13 +14,30 @@ const Home: NextPage = () => {
   const [ctx, setCtx] = useState<CanvasRenderingContext2D>();
   const refCanvas = useRef() as React.MutableRefObject<HTMLCanvasElement>;
 
-  const [isEraser, setIsEraser] = useState<boolean>(true);
+  const [defaultColor, setDefaultColor] = useState<string>(NameColors.DefaultBrush);
+
   const [isBrushDown, setIsBrushDown] = useState<boolean>(false);
   const [clientStroke, setClientStroke] = useState<IStrokes>({
     color: NameColors.DefaultBrush,
     size: 2,
     points: [],
   });
+
+  const switchBrush = useCallback((stateEraser: boolean) => {
+    if (stateEraser) {
+      setClientStroke({
+        ...clientStroke,
+        color: NameColors.Background,
+      });
+
+      return;
+    }
+
+    setClientStroke({
+      ...clientStroke,
+      color: NameColors.DefaultBrush,
+    });
+  }, [clientStroke]);
 
   const draw = useCallback(
     (stroke: IStrokes) => {
@@ -29,7 +46,7 @@ const Home: NextPage = () => {
 
         ctx.lineCap = 'round';
         ctx.lineWidth = stroke.size;
-        ctx.strokeStyle = isEraser ? NameColors.Background : stroke.color;
+        ctx.strokeStyle = stroke.color;
 
         ctx.beginPath();
 
@@ -42,7 +59,7 @@ const Home: NextPage = () => {
         console.log('Error, x undefined');
       }
     },
-    [ctx, isEraser],
+    [ctx],
   );
 
   const sendStrokes = async (data: IStrokes) => socket.emit(NameSocket.Draws, data);
@@ -53,6 +70,7 @@ const Home: NextPage = () => {
         ...clientStroke,
         color: e.target.value,
       });
+      setDefaultColor(e.target.value);
     },
     [clientStroke],
   );
@@ -141,9 +159,9 @@ const Home: NextPage = () => {
 
       <div className={st.container}>
         <div className={st.options}>
-          <Palette eraserState={[isEraser, setIsEraser]} />
+          <Palette switchBrush={switchBrush} />
 
-          <Color name="Color" handleChangeColor={handleChangeColor} />
+          <Color name="Color" defaultColor={defaultColor} handleChangeColor={handleChangeColor} />
 
           <Range
             name="Size"

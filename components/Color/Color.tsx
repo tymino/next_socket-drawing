@@ -3,11 +3,11 @@ import React, { FC, memo } from 'react';
 
 import { IColorProps } from '../../types';
 
-const Color: FC<IColorProps> = ({ name, handleChangeColor }) => {
+const Color: FC<IColorProps> = ({ name, defaultColor, handleChangeColor }) => {
   return (
     <div className={st.container}>
       <label htmlFor="color">{name}</label>
-      <input type="color" name="color" onChange={handleChangeColor} />
+      <input type="color" name="color" value={defaultColor} onChange={handleChangeColor} />
     </div>
   );
 };
