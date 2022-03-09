@@ -171,7 +171,7 @@ const Home: NextPage = () => {
             handleChangeSize={handleChangeSize}
           />
 
-          <button onClick={handleResetCanvas}>Reset</button>
+          <button className={st.buttonReset} onClick={handleResetCanvas}>Reset</button>
         </div>
 
         <Canvas
