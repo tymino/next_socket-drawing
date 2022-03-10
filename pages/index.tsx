@@ -36,10 +36,10 @@ const Home: NextPage = () => {
 
       setClientStroke({
         ...clientStroke,
-        color: NameColors.DefaultBrush,
+        color: defaultColor,
       });
     },
-    [clientStroke],
+    [clientStroke, defaultColor],
   );
 
   const draw = useCallback(
