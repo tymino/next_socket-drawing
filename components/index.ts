@@ -1,3 +1,4 @@
+export { default as Button } from './Button/Button';
 export { default as Canvas } from './Canvas/Canvas';
 export { default as Color } from './Color/Color';
 export { default as Palette } from './Palette/Palette';

@@ -2,8 +2,8 @@ import { IMouseTouchEvent } from '../IMouseTouchEvent';
 
 interface ICanvasProps {
   reference: React.MutableRefObject<HTMLCanvasElement>;
-  width: string;
-  height: string;
+  width: number;
+  height: number;
   handleMouseDown: (e: IMouseTouchEvent) => void;
   handleMouseMove: (e: IMouseTouchEvent) => void;
   handleMouseUp: () => void;

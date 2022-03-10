@@ -3,7 +3,7 @@ import Head from 'next/head';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
 
-import { Canvas, Color, Palette, Range } from '../components';
+import { Button, Canvas, Color, Palette, Range } from '../components';
 
 import type { NextPage } from 'next';
 import { IPositionBrush, IStrokes, NameColors, NameSocket, IMouseTouchEvent } from '../types';
@@ -23,21 +23,24 @@ const Home: NextPage = () => {
     points: [],
   });
 
-  const switchBrush = useCallback((stateEraser: boolean) => {
-    if (stateEraser) {
+  const switchBrush = useCallback(
+    (stateEraser: boolean) => {
+      if (stateEraser) {
+        setClientStroke({
+          ...clientStroke,
+          color: NameColors.Background,
+        });
+
+        return;
+      }
+
       setClientStroke({
         ...clientStroke,
-        color: NameColors.Background,
+        color: NameColors.DefaultBrush,
       });
-
-      return;
-    }
-
-    setClientStroke({
-      ...clientStroke,
-      color: NameColors.DefaultBrush,
-    });
-  }, [clientStroke]);
+    },
+    [clientStroke],
+  );
 
   const draw = useCallback(
     (stroke: IStrokes) => {
@@ -85,11 +88,11 @@ const Home: NextPage = () => {
     [clientStroke],
   );
 
-  const handleResetCanvas = () => {
+  const handleResetCanvas = useCallback(() => {
     if (ctx) {
       ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
     }
-  };
+  }, [ctx]);
 
   const handleMouseEvent = (e: IMouseTouchEvent) => {
     e.persist();
@@ -171,13 +174,13 @@ const Home: NextPage = () => {
             handleChangeSize={handleChangeSize}
           />
 
-          <button className={st.buttonReset} onClick={handleResetCanvas}>Reset</button>
+          <Button name="Reset" handleResetCanvas={handleResetCanvas} />
         </div>
 
         <Canvas
           reference={refCanvas}
-          width="500"
-          height="500"
+          width={500}
+          height={500}
           handleMouseDown={handleMouseDown}
           handleMouseUp={handleMouseUp}
           handleMouseMove={handleMouseMove}
