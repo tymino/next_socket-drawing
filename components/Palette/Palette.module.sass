@@ -1,9 +1,34 @@
-.brush
+.container
+  display: flex
+  padding: 10px 0
+
+.button
+  border: 1px solid var(--color-gray)
+  background: var(--color-gray)
+  text-transform: uppercase
+  font-weight: bold
+  color: var(--color-background)
+
+  fill: var(--color-background)
+
+  transition: border .4s, color .2s
+  cursor: pointer
+
+  &:hover:not(.activeBrush)
+    border: 1px solid var(--color-white)
+
+  &:active:not(.activeBrush)
+    border: 1px solid var(--color-gray)
+
+  &:first-child
+    margin-right: 10px
+
+// .brush
 .svg
+  padding: 4px
   width: 40px
   height: 40px
-  fill: red
-
 
 .activeBrush
-  border: 1px solid red
+  border: 1px solid var(--color-white)
+  fill: var(--color-white)

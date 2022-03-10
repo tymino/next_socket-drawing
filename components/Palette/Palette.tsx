@@ -18,7 +18,7 @@ const Palette: FC<IPalette> = ({ switchBrush }) => {
   return (
     <div className={st.container}>
       <button
-        className={`${st.brush} ${!isEraser && st.activeBrush}`}
+        className={`${st.button} ${st.brush} ${!isEraser && st.activeBrush}`}
         value=""
         onClick={(e) => handleClickIcon(e)}>
         <svg
@@ -49,7 +49,7 @@ const Palette: FC<IPalette> = ({ switchBrush }) => {
         </svg>
       </button>
       <button
-        className={`${st.eraser} ${isEraser && st.activeBrush}`}
+        className={`${st.button} ${st.eraser} ${isEraser && st.activeBrush}`}
         value="eraser"
         onClick={(e) => handleClickIcon(e)}>
         <svg
