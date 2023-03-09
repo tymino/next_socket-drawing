@@ -6,12 +6,11 @@ import { createServer } from 'http';
 import connectSocket from './socket';
 
 const dev = process.env.NODE_ENV !== 'production';
+const PORT = process.env.PORT || 3000;
 const nextApp = next({ dev });
 const nextHandler = nextApp.getRequestHandler();
 
 nextApp.prepare().then(() => {
-  const PORT = process.env.PORT || 3000;
-
   const app = express();
   const server = createServer(app);
 
